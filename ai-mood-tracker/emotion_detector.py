@@ -28,15 +28,9 @@ except (ImportError, ValueError, Exception) as e:  # pragma: no cover - optional
 	_HAS_DEEPFACE = False
 	_DEEPFACE_ERROR = str(e)
 
-try:  # pragma: no cover - optional dependency
-	from fer import FER  # type: ignore
-
-	_HAS_FER = True
-	_FER_ERROR = None
-except (ImportError, ValueError, Exception) as e:  # pragma: no cover - optional dependency
-	FER = None
-	_HAS_FER = False
-	_FER_ERROR = str(e)
+# FER removed - using DeepFace only for better compatibility
+_HAS_FER = False
+_FER_ERROR = "FER not used in this version"
 
 
 LOGGER = logging.getLogger(__name__)
@@ -156,38 +150,9 @@ class EmotionAnalyzer:
 		)
 
 	def _analyze_with_fer(self, frame: np.ndarray) -> Optional[EmotionResult]:
-		if FER is None:  # pragma: no cover - defensive
-			return None
-
-		if self._fer_detector is None:
-			self._fer_detector = FER(mtcnn=True)
-
-		rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-		try:
-			detections = self._fer_detector.detect_emotions(rgb_frame)
-		except Exception as exc:  # pragma: no cover - backend specific
-			LOGGER.debug("FER failed to analyze frame: %s", exc)
-			return None
-
-		if not detections:
-			return None
-
-		emotions = detections[0].get("emotions")
-		if not emotions:
-			return None
-
-		normalized = _normalize_emotions(emotions)
-		if not normalized:
-			return None
-
-		dominant = _get_dominant(normalized)
-
-		return EmotionResult(
-			dominant_emotion=dominant,
-			confidence=float(normalized.get(dominant, 0.0)),
-			emotions=normalized,
-			timestamp=datetime.utcnow(),
-		)
+		"""FER backend removed for compatibility. Use DeepFace instead."""
+		LOGGER.warning("FER backend not available. Using DeepFace only.")
+		return None
 
 
 def ensure_log_file(log_path: Path) -> None:
