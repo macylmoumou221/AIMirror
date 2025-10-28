@@ -3,4 +3,6 @@ opencv-python-headless>=4.8
 numpy>=1.24
 pandas>=2.0
 matplotlib>=3.7
-fer>=22.5
+tf-keras>=2.17.0
+deepface>=0.0.93
+
