@@ -1,4 +1,4 @@
-# AIMirror – Suivi d'humeur assisté par IA 😃📸
+# AIMirror – Suivi d'humeur assisté par IA 
 
 Bienvenue dans AIMirror, notre toute première application d'IA réalisée en équipe pour apprendre à construire une solution de bout en bout. Elle surveille la webcam, identifie les émotions faciales avec DeepFace (ou FER en solution de repli) et raconte une journée d'humeur à travers un tableau de bord Streamlit.
 
