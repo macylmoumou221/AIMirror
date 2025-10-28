@@ -22,7 +22,7 @@ try:  # pragma: no cover - optional dependency
 	from deepface import DeepFace  # type: ignore
 
 	_HAS_DEEPFACE = True
-except ImportError:  # pragma: no cover - optional dependency
+except (ImportError, ValueError, Exception):  # pragma: no cover - optional dependency
 	DeepFace = None
 	_HAS_DEEPFACE = False
 
