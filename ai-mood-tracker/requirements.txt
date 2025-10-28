@@ -1,5 +1,7 @@
 streamlit>=1.28
-opencv-python>=4.8
+opencv-python>=4.8; sys_platform == "win32"
+opencv-python>=4.8; sys_platform == "darwin"
+opencv-python-headless>=4.8; sys_platform == "linux"
 numpy>=1.24
 pandas>=2.0
 matplotlib>=3.7
