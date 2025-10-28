@@ -36,7 +36,7 @@ CHART_PATH = VISUALS_DIR / "daily_mood_chart.png"
 
 st.set_page_config(
 	page_title="AI Mood Tracker",
-	page_icon="😃",
+	page_icon="�",
 	layout="wide",
 )
 
@@ -47,9 +47,9 @@ def get_analyzer() -> EmotionAnalyzer:
 	try:
 		return EmotionAnalyzer()
 	except ImportError as exc:
-		st.error("❌ No emotion detection backend available.")
+		st.error("No emotion detection backend available.")
 		st.error(str(exc))
-		st.info("💡 Try installing: `pip install deepface fer`")
+		st.info("Try installing: `pip install deepface fer`")
 		st.stop()
 
 
@@ -103,30 +103,30 @@ def draw_emotion_overlay(image: Image.Image, result: EmotionResult) -> Image.Ima
 def main() -> None:
 	ensure_log_file(LOG_PATH)
 
-	st.title("🎭 AI Mood Tracker")
+	st.title("AI Mood Tracker")
 	st.markdown("*Detect and track your emotions in real-time using AI*")
 
 	# Display backend availability info
 	with st.sidebar:
-		st.markdown("### 🔧 Backend Status")
+		st.markdown("### Backend Status")
 		if _HAS_DEEPFACE:
-			st.success("✅ DeepFace available")
+			st.success("DeepFace available")
 		else:
-			st.warning("⚠️ DeepFace unavailable")
+			st.warning("DeepFace unavailable")
 			if _DEEPFACE_ERROR:
 				with st.expander("Error details"):
 					st.code(_DEEPFACE_ERROR[:200])
 		
 		if _HAS_FER:
-			st.success("✅ FER available")
+			st.success("FER available")
 		else:
-			st.warning("⚠️ FER unavailable")
+			st.warning("FER unavailable")
 			if _FER_ERROR:
 				with st.expander("Error details"):
 					st.code(_FER_ERROR[:200])
 		
 		if not _HAS_DEEPFACE and not _HAS_FER:
-			st.error("❌ No emotion backend available!")
+			st.error("No emotion backend available!")
 			st.stop()
 
 	analyzer = get_analyzer()
@@ -135,7 +135,7 @@ def main() -> None:
 	col1, col2 = st.columns([2, 1])
 
 	with col1:
-		st.subheader("📸 Camera Input")
+		st.subheader("Camera Input")
 		
 		# Camera input - this will ask for camera permission in browser
 		camera_photo = st.camera_input("Take a photo to analyze your emotion")
@@ -154,12 +154,12 @@ def main() -> None:
 				# Log the result
 				append_log_entry(LOG_PATH, result, source="browser_camera")
 				
-				st.success(f"✅ Logged: **{result.dominant_emotion}** ({result.confidence:.1f}%)")
+				st.success(f"Logged: **{result.dominant_emotion}** ({result.confidence:.1f}%)")
 			else:
-				st.warning("⚠️ No face detected. Please try again with better lighting.")
+				st.warning("No face detected. Please try again with better lighting.")
 
 	with col2:
-		st.subheader("📊 Today's Summary")
+		st.subheader("Today's Summary")
 		
 		summary = get_daily_summary(LOG_PATH)
 		
@@ -180,7 +180,7 @@ def main() -> None:
 			st.info("No data logged today. Take a photo to get started!")
 
 	# Recent entries
-	st.subheader("📝 Recent Entries")
+	st.subheader("Recent Entries")
 	recent = get_recent_entries(LOG_PATH, limit=10)
 	
 	if not recent.empty:
@@ -193,7 +193,7 @@ def main() -> None:
 		st.info("No entries yet. Start by taking a photo!")
 
 	# Instructions
-	with st.expander("ℹ️ How to use"):
+	with st.expander("How to use"):
 		st.markdown("""
 		1. **Allow Camera Access**: Click the camera button above and allow browser access to your camera
 		2. **Take a Photo**: Click the capture button to take a photo
