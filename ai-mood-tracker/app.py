@@ -83,7 +83,7 @@ def draw_emotion_overlay(image: Image.Image, result: EmotionResult) -> Image.Ima
 	img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
 	
 	# Draw emotion text
-	text = f"{result.emotion}: {result.confidence:.1f}%"
+	text = f"{result.dominant_emotion}: {result.confidence:.1f}%"
 	cv2.putText(
 		img_bgr,
 		text,
@@ -137,18 +137,12 @@ def main() -> None:
 				# Show image with emotion overlay
 				img = Image.open(camera_photo)
 				img_with_overlay = draw_emotion_overlay(img, result)
-				st.image(img_with_overlay, caption=f"Detected: {result.emotion} ({result.confidence:.1f}%)", use_container_width=True)
+				st.image(img_with_overlay, caption=f"Detected: {result.dominant_emotion} ({result.confidence:.1f}%)", use_container_width=True)
 				
 				# Log the result
-				append_log_entry(
-					LOG_PATH,
-					datetime.now(),
-					result.emotion,
-					result.confidence,
-					"deepface" if _HAS_DEEPFACE else "fer"
-				)
+				append_log_entry(LOG_PATH, result, source="browser_camera")
 				
-				st.success(f"✅ Logged: **{result.emotion}** ({result.confidence:.1f}%)")
+				st.success(f"✅ Logged: **{result.dominant_emotion}** ({result.confidence:.1f}%)")
 			else:
 				st.warning("⚠️ No face detected. Please try again with better lighting.")
 
@@ -157,20 +151,19 @@ def main() -> None:
 		
 		summary = get_daily_summary(LOG_PATH)
 		
-		if summary:
-			st.metric("Total Detections", summary["count"])
-			st.metric("Dominant Emotion", summary["dominant_emotion"])
+		if summary and summary.total_scans > 0:
+			st.metric("Total Detections", summary.total_scans)
+			st.metric("Dominant Emotion", summary.dominant_emotion)
 			
 			# Show emotion distribution
 			st.markdown("**Emotion Distribution:**")
-			for emotion, pct in summary["distribution"].items():
-				st.progress(pct / 100, text=f"{emotion}: {pct:.1f}%")
+			for emotion, pct in summary.distribution.items():
+				st.progress(pct, text=f"{emotion}: {pct*100:.1f}%")
 			
 			# Generate and show chart
-			if summary["count"] > 0:
-				save_distribution_chart(LOG_PATH, CHART_PATH)
-				if CHART_PATH.exists():
-					st.image(str(CHART_PATH), caption="Daily Mood Distribution", use_container_width=True)
+			save_distribution_chart(summary.distribution, CHART_PATH, "Daily Mood Distribution")
+			if CHART_PATH.exists():
+				st.image(str(CHART_PATH), caption="Daily Mood Distribution", use_container_width=True)
 		else:
 			st.info("No data logged today. Take a photo to get started!")
 
