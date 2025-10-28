@@ -165,7 +165,5 @@ ai-mood-tracker/
 
 ## Project context
 
-- **Timeline:** February 2025 – October 2025
-- **Role:** Macyl MOUMOU
 - **Stack:** Python, OpenCV, DeepFace, Streamlit, pandas, matplotlib
 - **Why we built it:** To learn how to stitch together real-time CV, AI inference, data logging, and UI polish in a single app.
