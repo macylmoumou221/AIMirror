@@ -73,7 +73,7 @@ class EmotionAnalyzer:
 		self,
 		detector_backend: str = "opencv",
 		enforce_detection: bool = False,
-		backend_priority: Sequence[str] = ("deepface", "fer"),
+		backend_priority: Sequence[str] = ("fer", "deepface"),
 	) -> None:
 		self.detector_backend = detector_backend
 		self.enforce_detection = enforce_detection

@@ -47,10 +47,9 @@ def get_analyzer() -> EmotionAnalyzer:
 	try:
 		return EmotionAnalyzer()
 	except ImportError as exc:
-		st.error(
-			"Emotion backend not available. Install `deepface` or `fer` "
-			"via `pip install deepface` or `pip install fer`."
-		)
+		st.error("❌ No emotion detection backend available.")
+		st.error(str(exc))
+		st.info("💡 Try installing: `pip install deepface fer`")
 		st.stop()
 
 
