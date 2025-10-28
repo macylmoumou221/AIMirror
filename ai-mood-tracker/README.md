@@ -42,7 +42,7 @@ ai-mood-tracker/
 	```
 
 	> 💡 Au premier lancement, DeepFace télécharge ses poids dans `C:\Users\<vous>\.deepface`. Pour une installation plus légère, retirez `deepface` du fichier des dépendances : l'application basculera automatiquement sur FER.
-	> 🐧 Sur Streamlit Cloud (Linux), la dépendance `opencv-python-headless` est installée automatiquement via les marqueurs de plateforme pour éviter l'erreur `libGL.so.1`.
+	> 🐧 Sur Streamlit Cloud (Linux), les marqueurs de plateforme installent `opencv-python-headless` et n'installent pas DeepFace. L'application tourne alors uniquement avec FER, ce qui évite les erreurs `libGL.so.1` et les conflits avec Keras 3.
 
 3. Démarrez le tableau de bord :
 
@@ -66,7 +66,7 @@ ai-mood-tracker/
 ## Notes techniques
 
 - **Accès caméra :** assurez-vous qu'aucune autre application n'occupe la webcam.
-- **Performance :** DeepFace donne des résultats fins mais demande des ressources. Ajustez le nombre d'images par seconde (1 à 10 FPS) pour trouver le bon équilibre.
+- **Performance :** DeepFace est précis mais gourmand ; ajustez la fréquence d'images (1 à 10 FPS) pour trouver un bon équilibre.
 - **Fuseau horaire :** les horodatages sont enregistrés en UTC pour faciliter les analyses multi-machines.
 
 ## Pistes d'amélioration
@@ -81,7 +81,7 @@ ai-mood-tracker/
 
 1. Poussez le code (y compris `runtime.txt`) sur GitHub.
 2. Dans Streamlit Cloud, pointez l'application vers `ai-mood-tracker/app.py`.
-3. La plateforme installera automatiquement `opencv-python-headless` grâce aux marqueurs de plateforme Linux.
+3. Les marqueurs de plateforme installent `opencv-python-headless` (et ignorent DeepFace) sous Linux ; l'application fonctionne alors avec FER uniquement et évite les erreurs `libGL.so.1` et Keras 3.
 4. Si vous modifiez les dépendances, cliquez sur **Manage app → Reboot** pour relancer une installation propre.
 
 ## À propos du projet
@@ -137,7 +137,7 @@ ai-mood-tracker/
 	```
 
 	> 💡 On first launch DeepFace downloads weights to `C:\Users\<you>\.deepface`. Remove `deepface` from `requirements.txt` if you prefer a smaller footprint—the app automatically falls back to FER.
-	> 🐧 On Streamlit Cloud (Linux), the platform markers pull in `opencv-python-headless` so you won’t hit the `libGL.so.1` import error.
+	> 🐧 On Streamlit Cloud (Linux), the platform markers install `opencv-python-headless` and skip DeepFace so the app runs with FER only, avoiding `libGL.so.1` and Keras 3 errors.
 
 3. Launch the dashboard:
 
@@ -176,7 +176,7 @@ ai-mood-tracker/
 
 1. Commit and push your changes (including `runtime.txt`) to GitHub.
 2. In Streamlit Cloud, set the app entry point to `ai-mood-tracker/app.py`.
-3. The environment markers pull in `opencv-python-headless` on Linux, resolving the `libGL.so.1` import issue.
+3. The environment markers pull in `opencv-python-headless` on Linux and skip DeepFace, so the app runs with FER and avoids both the `libGL.so.1` error and Keras 3 conflicts.
 4. After dependency updates, use **Manage app → Reboot** to trigger a clean reinstall.
 
 ## Project context

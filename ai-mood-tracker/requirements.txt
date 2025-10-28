@@ -5,5 +5,5 @@ opencv-python-headless>=4.8; sys_platform == "linux"
 numpy>=1.24
 pandas>=2.0
 matplotlib>=3.7
-deepface>=0.0.79
+deepface>=0.0.95; sys_platform != "linux"
 fer>=22.5
