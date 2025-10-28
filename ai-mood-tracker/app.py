@@ -21,7 +21,9 @@ from emotion_detector import (
 	get_recent_entries,
 	save_distribution_chart,
 	_HAS_DEEPFACE,
+	_HAS_FER,
 	_DEEPFACE_ERROR,
+	_FER_ERROR,
 )
 
 
@@ -111,10 +113,21 @@ def main() -> None:
 		if _HAS_DEEPFACE:
 			st.success("✅ DeepFace available")
 		else:
-			st.error("❌ DeepFace unavailable")
+			st.warning("⚠️ DeepFace unavailable")
 			if _DEEPFACE_ERROR:
 				with st.expander("Error details"):
 					st.code(_DEEPFACE_ERROR[:200])
+		
+		if _HAS_FER:
+			st.success("✅ FER available")
+		else:
+			st.warning("⚠️ FER unavailable")
+			if _FER_ERROR:
+				with st.expander("Error details"):
+					st.code(_FER_ERROR[:200])
+		
+		if not _HAS_DEEPFACE and not _HAS_FER:
+			st.error("❌ No emotion backend available!")
 			st.stop()
 
 	analyzer = get_analyzer()

@@ -6,4 +6,5 @@ matplotlib>=3.7
 pillow>=10.0
 tf-keras>=2.17.0
 deepface>=0.0.93
+fer>=22.5
 
