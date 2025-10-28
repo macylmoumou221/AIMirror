@@ -22,17 +22,21 @@ try:  # pragma: no cover - optional dependency
 	from deepface import DeepFace  # type: ignore
 
 	_HAS_DEEPFACE = True
-except (ImportError, ValueError, Exception):  # pragma: no cover - optional dependency
+	_DEEPFACE_ERROR = None
+except (ImportError, ValueError, Exception) as e:  # pragma: no cover - optional dependency
 	DeepFace = None
 	_HAS_DEEPFACE = False
+	_DEEPFACE_ERROR = str(e)
 
 try:  # pragma: no cover - optional dependency
 	from fer import FER  # type: ignore
 
 	_HAS_FER = True
-except ImportError:  # pragma: no cover - optional dependency
+	_FER_ERROR = None
+except (ImportError, ValueError, Exception) as e:  # pragma: no cover - optional dependency
 	FER = None
 	_HAS_FER = False
+	_FER_ERROR = str(e)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -77,9 +81,12 @@ class EmotionAnalyzer:
 		self._fer_detector: Optional[object] = None
 
 		if self.backend is None:
-			raise ImportError(
-				"No emotion detection backend available. Install 'deepface' or 'fer'."
-			)
+			error_msg = "No emotion detection backend available. Install 'deepface' or 'fer'."
+			if _DEEPFACE_ERROR:
+				error_msg += f"\n  DeepFace error: {_DEEPFACE_ERROR}"
+			if _FER_ERROR:
+				error_msg += f"\n  FER error: {_FER_ERROR}"
+			raise ImportError(error_msg)
 
 		LOGGER.info("Using emotion backend: %s", self.backend)
 

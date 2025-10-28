@@ -19,6 +19,10 @@ from emotion_detector import (
 	get_daily_summary,
 	get_recent_entries,
 	save_distribution_chart,
+	_HAS_DEEPFACE,
+	_HAS_FER,
+	_DEEPFACE_ERROR,
+	_FER_ERROR,
 )
 
 
@@ -109,6 +113,22 @@ def get_analyzer() -> EmotionAnalyzer:
 def main() -> None:
 	ensure_log_file(LOG_PATH)
 	_init_session_state()
+
+	# Display backend availability info
+	st.sidebar.markdown("### Backend Status")
+	if _HAS_DEEPFACE:
+		st.sidebar.success("✅ DeepFace available")
+	else:
+		st.sidebar.warning(f"⚠️ DeepFace unavailable")
+		if _DEEPFACE_ERROR:
+			st.sidebar.caption(f"Error: {_DEEPFACE_ERROR[:100]}")
+	
+	if _HAS_FER:
+		st.sidebar.success("✅ FER available")
+	else:
+		st.sidebar.warning(f"⚠️ FER unavailable")
+		if _FER_ERROR:
+			st.sidebar.caption(f"Error: {_FER_ERROR[:100]}")
 
 	analyzer = get_analyzer()
 
