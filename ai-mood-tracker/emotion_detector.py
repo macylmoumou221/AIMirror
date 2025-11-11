@@ -13,7 +13,15 @@ import logging
 from pathlib import Path
 from typing import Dict, Iterable, Optional, Sequence
 
-import cv2
+try:  # OpenCV is optional on some hosting platforms
+	import cv2
+	_HAS_CV2 = True
+	_CV2_ERROR = None
+except Exception as _cv_err:  # pragma: no cover - optional runtime dependency
+	cv2 = None
+	_HAS_CV2 = False
+	_CV2_ERROR = str(_cv_err)
+
 import numpy as np
 import pandas as pd
 
@@ -118,7 +126,15 @@ class EmotionAnalyzer:
 		if DeepFace is None:  # pragma: no cover - defensive
 			return None
 
-		rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+		# Convert BGR->RGB. If OpenCV is unavailable, fall back to numpy slicing
+		if _HAS_CV2:
+			rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+		else:
+			# assume frame is a HxWx3 numpy array in BGR or RGB; try reversing channels
+			if isinstance(frame, np.ndarray) and frame.ndim == 3 and frame.shape[2] == 3:
+				rgb_frame = frame[:, :, ::-1]
+			else:
+				rgb_frame = frame
 		try:
 			analysis = DeepFace.analyze(  # type: ignore[attr-defined]
 				rgb_frame,
@@ -162,7 +178,14 @@ class EmotionAnalyzer:
 		if self._fer_detector is None:
 			self._fer_detector = FER(mtcnn=True)
 
-		rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+		# Convert BGR->RGB. If OpenCV is unavailable, fall back to numpy slicing
+		if _HAS_CV2:
+			rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+		else:
+			if isinstance(frame, np.ndarray) and frame.ndim == 3 and frame.shape[2] == 3:
+				rgb_frame = frame[:, :, ::-1]
+			else:
+				rgb_frame = frame
 		try:
 			detections = self._fer_detector.detect_emotions(rgb_frame)
 		except Exception as exc:  # pragma: no cover - backend specific

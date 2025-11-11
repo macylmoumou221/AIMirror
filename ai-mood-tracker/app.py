@@ -8,7 +8,15 @@ from typing import Optional
 from PIL import Image
 import io
 
-import cv2
+try:
+	import cv2
+	_HAS_CV2 = True
+	_CV2_ERROR = None
+except Exception as _cv_err:  # pragma: no cover - optional runtime dependency
+	cv2 = None
+	_HAS_CV2 = False
+	_CV2_ERROR = str(_cv_err)
+
 import numpy as np
 import streamlit as st
 
@@ -62,9 +70,12 @@ def analyze_image(image_data, analyzer: EmotionAnalyzer) -> Optional[EmotionResu
 		else:
 			img = np.array(Image.open(io.BytesIO(image_data.read())))
 		
-		# Convert RGB to BGR for OpenCV
-		if len(img.shape) == 3 and img.shape[2] == 3:
-			img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+		# Convert RGB->BGR for backends that expect BGR. Prefer cv2 if available.
+		if isinstance(img, np.ndarray) and img.ndim == 3 and img.shape[2] == 3:
+			if _HAS_CV2:
+				img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+			else:
+				img_bgr = img[:, :, ::-1]
 		else:
 			img_bgr = img
 		
@@ -80,24 +91,32 @@ def draw_emotion_overlay(image: Image.Image, result: EmotionResult) -> Image.Ima
 	"""Draw emotion label on image."""
 	img_array = np.array(image)
 	
-	# Convert RGB to BGR for OpenCV
-	img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
-	
-	# Draw emotion text
+	# If OpenCV is available use it for drawing; otherwise use Pillow
 	text = f"{result.dominant_emotion}: {result.confidence:.1f}%"
-	cv2.putText(
-		img_bgr,
-		text,
-		(10, 30),
-		cv2.FONT_HERSHEY_SIMPLEX,
-		1.0,
-		(0, 255, 0),
-		2,
-	)
-	
-	# Convert back to RGB
-	img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
-	return Image.fromarray(img_rgb)
+	if _HAS_CV2:
+		img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+		cv2.putText(
+			img_bgr,
+			text,
+			(10, 30),
+			cv2.FONT_HERSHEY_SIMPLEX,
+			1.0,
+			(0, 255, 0),
+			2,
+		)
+		img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+		return Image.fromarray(img_rgb)
+	else:
+		from PIL import ImageDraw, ImageFont
+
+		pil_img = Image.fromarray(img_array)
+		draw = ImageDraw.Draw(pil_img)
+		try:
+			font = ImageFont.load_default()
+		except Exception:
+			font = None
+		draw.text((10, 10), text, fill=(0, 255, 0), font=font)
+		return pil_img
 
 
 def main() -> None:
