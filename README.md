@@ -85,7 +85,7 @@ ai-mood-tracker/
 
 ---
 
-# AIMirror – AI Mood Tracker 😃📸
+# AIMirror – AI Mood Tracker 
 
 AIMirror is our team’s very first end-to-end AI project. We built it as a learning journey to understand how real-time computer vision, lightweight analytics, and a Streamlit dashboard can come together to tell a story about someone’s mood.
 
